@@ -84,37 +84,18 @@ export class TranslateService {
 
   async translateWithGoogle(translateQueryDto: TranslateQueryDto) {
     const { query, source, target } = translateQueryDto
-    const translationClient = new TranslationServiceClient({
-      keyFilename: this.configService.get<string>(
-        'translation.googleKeyFileName',
-      ),
-    })
     try {
-      if (target === 'en') {
-        const englishRequest = this.makeGoogleRequest(query, source, target)
-        const [response] = await translationClient.translateText(englishRequest)
-        const result = response.translations[0].translatedText
-        return { result }
-      } else if (target === 'uk') {
-        const russianRequest = this.makeGoogleRequest(query, source, 'ru')
-        const [russianResponse] = await translationClient.translateText(
-          russianRequest,
-        )
-        const russianQuery = russianResponse.translations[0].translatedText
-
-        const ukrainianRequest = this.makeGoogleRequest(
-          russianQuery,
-          'ru',
-          target,
-        )
-        const [ukrainianResponse] = await translationClient.translateText(
-          ukrainianRequest,
-        )
-        const result = ukrainianResponse.translations[0].translatedText
-        return { result }
-      }
+      const translationClient = new TranslationServiceClient({
+        keyFilename: this.configService.get<string>(
+          'translation.googleKeyFileName',
+        ),
+      })
+      const request = this.makeGoogleRequest(query, source, target)
+      const [response] = await translationClient.translateText(request)
+      const result = response.translations[0].translatedText
+      return { result }
     } catch (error) {
-      console.log(error.message)
+      console.error(error)
     }
   }
 
