@@ -10,21 +10,21 @@ interface Response {
 export class TranslateController {
   constructor(private translateService: TranslateService) {}
 
-  @Post('/papago')
+  @Post('papago')
   translateWithPapago(
     @Body() translateQueryDto: TranslateQueryDto,
   ): Promise<Response> {
     return this.translateService.translateWithPapago(translateQueryDto)
   }
 
-  @Post('/kakao')
+  @Post('kakao')
   translateWithKakao(
     @Body() translateQueryDto: TranslateQueryDto,
   ): Promise<Response> {
     return this.translateService.translateWithKakao(translateQueryDto)
   }
 
-  @Post('/google')
+  @Post('google')
   translateWithGoogle(
     @Body() translateQueryDto: TranslateQueryDto,
   ): Promise<Response> {
