@@ -1,4 +1,4 @@
-import { HttpService, Injectable } from '@nestjs/common'
+import { HttpException, HttpService, Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { TranslationServiceClient } from '@google-cloud/translate'
 import { TranslateQueryDto } from './dto/translate-query.dto'
@@ -8,7 +8,10 @@ export class TranslateService {
   constructor(
     private httpService: HttpService,
     private configService: ConfigService,
-  ) {}
+    private logger: Logger,
+  ) {
+    logger = new Logger('Translate Error')
+  }
 
   async translateWithPapago(translateQueryDto: TranslateQueryDto) {
     const { query, source, target } = translateQueryDto
@@ -36,7 +39,8 @@ export class TranslateService {
       const result = response.data.message.result.translatedText
       return { result }
     } catch (error) {
-      console.log(error.message)
+      this.logger.error('Papago daily quota exceeded')
+      throw new HttpException('Papago daily quota exceeded', 520)
     }
   }
 
@@ -78,7 +82,8 @@ export class TranslateService {
       }
       return { result }
     } catch (error) {
-      console.log(error.message)
+      this.logger.error('Kakao daily quota exceeded')
+      throw new HttpException('Kakao daily quota exceeded', 520)
     }
   }
 
@@ -95,7 +100,8 @@ export class TranslateService {
       const result = response.translations[0].translatedText
       return { result }
     } catch (error) {
-      console.error(error)
+      this.logger.error('Google daily quota exceeded')
+      throw new HttpException('Google daily quota exceeded', 520)
     }
   }
 
